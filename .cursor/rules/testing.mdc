@@ -1,0 +1,103 @@
+---
+description: korail.js 테스트 규약 — 제어 흐름 금지, it.each, 커버리지 90%
+globs: tests/**/*.ts
+alwaysApply: false
+---
+
+# 테스트 규약
+
+러너는 **Vitest** 입니다.
+
+## 제어 흐름 금지 (자동 강제)
+
+**테스트 함수 안에 `if` / `for` / `while` 문을 쓰지 마세요.**
+`tests/style.test.ts` 가 TypeScript 컴파일러 API 로 AST 를 훑어 강제합니다 —
+어기면 빨갛게 실패합니다.
+
+- 케이스가 여러 개 → `it.each` / `describe.each`
+- 집합 검증 → `filter`/`map` 으로 **위반 목록**을 만들어 `toEqual([])` 과 비교
+
+```ts
+// 나쁨 — 어디서 깨졌는지 모르고 첫 실패에서 멈춤
+for (const profile of DEVICE_PROFILES) {
+  expect(profile.buildId.startsWith(...)).toBe(true);
+}
+
+// 좋음 — 위반 전부가 한 번에 드러남
+const bad = DEVICE_PROFILES.filter((p) => !p.buildId.startsWith(...)).map((p) => p.id);
+expect(bad).toEqual([]);
+```
+
+`filter`/`map`/`some`/`every` 는 값을 뽑는 **식**이라 허용됩니다. 금지 대상은
+제어 흐름 **문**입니다.
+
+## Given–When–Then (자동 강제)
+
+모든 테스트는 준비·실행·검증 경계를 주석으로 드러냅니다.
+
+- `// when` · `// then` **필수**, `// given` 은 준비 코드가 있을 때만
+- 예외 검증처럼 실행·검증이 한 덩어리면 `// when & then`
+- 순서는 given → when → then
+
+```ts
+it("같은 종류의 승객을 합친다", () => {
+  // given
+  const passengers = [new AdultPassenger(1), new AdultPassenger(2)];
+
+  // when
+  const merged = Passenger.reduce(passengers);
+
+  // then
+  expect(counts(merged)).toEqual([["AdultPassenger", 3]]);
+});
+```
+
+`// when` 이 여러 줄이면 대개 테스트 하나가 두 가지를 검증하고 있다는 신호입니다.
+
+## 비동기 단언은 반드시 await
+
+**`await` 을 빠뜨린 `expect` 는 통과합니다.** 이 저장소의 공개 API 가 전부
+`async` 라 상시 위험입니다.
+
+```ts
+// 나쁨 — 거부를 아무도 안 보고 테스트는 초록색
+expect(client.login("", "")).rejects.toThrow(LoginFailedError);
+
+// 좋음
+await expect(client.login("", "")).rejects.toThrow(LoginFailedError);
+```
+
+비동기 실패 경로에는 `expect.assertions(n)` 을 함께 써서 단언이 실제로 실행됐는지
+고정하세요.
+
+## 커버리지 90%
+
+`vitest.config.ts` 의 `coverage.thresholds` 가 lines·statements·branches·functions
+를 전부 90% 로 잡습니다. **게이트를 낮추거나 `--coverage=false` 로 우회하지 말고
+테스트를 쓰세요.**
+
+## 네트워크 금지
+
+실제 요청을 절대 보내지 않습니다. `tests/helpers.ts` 의 `FakeSession` 과
+`korail`/`makeKorail` 픽스처를 쓰세요. 응답 샘플은 `tests/payloads.ts` 에 모으고,
+**필드 이름을 지어내지 마세요** — 실제 응답 모양이어야 합니다.
+
+## 골든 벡터
+
+DynaPath 토큰과 AES 결과는 서버가 바이트 단위로 검증합니다.
+`tests/dynapath.test.ts` 가 고정 입력에 대한 토큰 전체를 박아 둬 리팩터링 사고를
+잡습니다. 실패하면 인코딩이 바뀐 것이고, 그건 곧 서버 거부입니다 — 되돌리세요.
+
+## 스타일
+
+- 테스트 하나에 개념 하나. 이름은 검증하는 **행동**을 말합니다.
+- `it.each`, `expect.soft`, `vi.spyOn`, 픽스처를 최대한 활용.
+- 일부러 잘못된 타입을 넘길 때는 헬퍼나 `as unknown as T` 로 의도를 명시하세요.
+  런타임 가드 테스트를 지우지 마세요.
+
+## 꼭 덮을 경계
+
+이 코드베이스의 버그는 대부분 여기서 나왔습니다:
+응답 필드 누락·빈 문자열, 자정을 넘기는 운행 시간, 타임존(KST 고정),
+매진·예약대기 분기, 승객 합치기(정렬 안 된 입력), 로그인 실패 경로,
+폼 필드가 실제로 나가는지, **듀얼 패키지 진입점(ESM `import` / CJS `require`)**.

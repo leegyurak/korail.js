@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PNPM_VERSION: "10.34.5"
+
+jobs:
+  lint:
+    name: 린트 · 타입 검사
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: biome
+        run: pnpm exec biome ci .
+      - name: tsc --noEmit
+        run: pnpm typecheck
+
+  test:
+    name: 테스트 (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: vitest + 커버리지 게이트
+        run: pnpm test
+
+  build:
+    name: 빌드 · 듀얼 패키지 로드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # TS 로만 개발하면 듀얼 패키지 설정이 깨져도 못 봅니다 — 양쪽을 실제로 불러 봅니다.
+      - name: ESM import
+        run: node -e "import('./dist/index.mjs').then((m) => { if (typeof m.Korail !== 'function') { throw new Error('ESM 진입점에 Korail 이 없습니다'); } })"
+      - name: CJS require
+        run: node -e "const m = require('./dist/index.cjs'); if (typeof m.Korail !== 'function') { throw new Error('CJS 진입점에 Korail 이 없습니다'); }"
+      - name: 타입 선언 존재 확인
+        run: test -f dist/index.d.ts && test -f dist/index.d.cts
+
+  security:
+    name: Trivy 스캔
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: vuln,secret
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [lint, test, build, security]
+    runs-on: ubuntu-latest
+    steps:
+      # 필수 체크는 이 잡 하나입니다 — 위 잡이 하나라도 실패하거나 건너뛰면 실패합니다.
+      - name: 모든 잡이 성공했는지
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "true" ]; then
+            echo "선행 잡이 성공하지 않았습니다"
+            exit 1
+          fi
+          echo "모든 잡 통과"

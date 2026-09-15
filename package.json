@@ -1,0 +1,72 @@
+{
+  "name": "korail.js",
+  "version": "0.0.0",
+  "description": "코레일(KTX) 스마트 예매 비공식 TypeScript/JavaScript 클라이언트",
+  "keywords": [
+    "korail",
+    "ktx",
+    "korea",
+    "train",
+    "railway",
+    "booking",
+    "reservation"
+  ],
+  "homepage": "https://github.com/leegyurak/korail.js#readme",
+  "bugs": "https://github.com/leegyurak/korail.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leegyurak/korail.js.git"
+  },
+  "license": "MIT",
+  "author": "leegyurak",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "format": "biome format --write .",
+    "lint": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "build": "tsup",
+    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "node-tls-client": "^2.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^3.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "koffi"
+    ]
+  }
+}

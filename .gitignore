@@ -1,0 +1,42 @@
+node_modules/
+dist/
+.DS_Store
+
+# 빌드·검사 캐시
+*.tsbuildinfo
+.turbo/
+.vite/
+
+# 커버리지 산출물
+coverage/
+*.lcov
+junit.xml
+
+# CI 가 생성하는 것들 (커밋 대상 아님)
+*.sarif
+
+# 환경 변수 — 자격증명이 들어갑니다. 절대 커밋하지 않습니다.
+.env
+.env.*
+!.env.example
+
+# 로컬 실험용 스크립트 — 자격증명이 들어가기 쉬우므로 절대 커밋하지 않습니다.
+/scratch*.ts
+/scratch*.js
+/scratch*.mjs
+/local/
+
+# 리버스 엔지니어링용 APK 와 디컴파일 결과 — 절대 커밋하지 않습니다.
+*.apk
+/korail_apk/
+/korail_src/
+
+# 에이전트 설정은 저장소 내용입니다 (AGENTS.md §7 — 추가·수정·삭제 모두 DOCS:).
+# 개발자 **전역** gitignore 에 `.claude/` 를 넣어 두는 경우가 흔한데, 그러면 서브
+# 에이전트와 스킬이 조용히 빠진 채 클론됩니다 — `.agents/skills` 가 `.claude/skills`
+# 를 가리키는 심볼릭 링크라 링크까지 끊깁니다. 여기서 되돌립니다.
+!.claude/
+
+# 다만 개인 로컬 설정은 계속 제외합니다 — 머신별 경로·권한이 들어갑니다.
+.claude/settings.local.json
+.claude/local/
