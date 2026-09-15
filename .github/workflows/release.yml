@@ -63,10 +63,17 @@ jobs:
 
       - run: pnpm build
 
+      # npm Trusted Publishing(OIDC). 저장된 토큰이 없습니다 — 인증은 위
+      # `id-token: write` 로 발급되는 단명 OIDC 토큰으로 이뤄집니다.
+      #
+      # npmjs.com 의 패키지 Settings → Trusted Publisher 에 이 저장소와
+      # **이 파일 이름(release.yml)** 이 등록돼 있어야 합니다. 파일을 옮기거나
+      # 이름을 바꾸면 npm 쪽 등록도 함께 고쳐야 배포가 통과합니다.
+      #
+      # `--provenance` 는 Trusted Publishing 에서는 자동이라 없어도 되지만,
+      # 의도를 코드에 남겨 두려고 그대로 둡니다.
       - name: npm publish
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 릴리스 노트
         uses: softprops/action-gh-release@v2
