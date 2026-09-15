@@ -16,6 +16,17 @@ const tsconfig = JSON.parse(
   readFileSync("tsconfig.json", "utf8").replace(/^\s*\/\/.*$/gm, ""),
 ) as Record<string, any>;
 const ciWorkflow = readFileSync(".github/workflows/ci.yml", "utf8");
+const codeowners = readFileSync(".github/CODEOWNERS", "utf8");
+
+/**
+ * 저장소 소유자 — `package.json` 의 repository URL 에서 뽑습니다.
+ *
+ * GitHub 사용자명은 바뀝니다. 이름을 여기저기 문자열로 박아 두면 한 곳만 갱신돼도
+ * 나머지는 조용히 옛 이름을 가리키고, CODEOWNERS 가 어긋나면 **코드 소유자 승인
+ * 요건이 해결되지 않아 머지가 막힙니다** — 저장소에서는 아무 에러도 안 납니다.
+ */
+const REPO_OWNER =
+  /github\.com\/([^/]+)\/korail\.js/.exec(packageJson.repository.url as string)?.[1] ?? "";
 const releaseWorkflow = readFileSync(".github/workflows/release.yml", "utf8");
 
 describe("버전", () => {
@@ -343,5 +354,58 @@ describe("에이전트 설정 커밋 가능성", () => {
 
     // then
     expect(broken).toEqual([]);
+  });
+});
+
+describe("저장소 소유자 일관성", () => {
+  /** 문서·설정에 적힌 이 저장소의 GitHub 링크에서 소유자만 뽑습니다. */
+  function ownersIn(text: string): string[] {
+    return [...text.matchAll(/github\.com\/([^/\s)]+)\/(?:korail\.js|pykorail)/g)]
+      .map((match) => match[1] ?? "")
+      .filter((owner) => owner !== "");
+  }
+
+  const DOCS: readonly [string, string][] = [
+    ["README.md", readFileSync("README.md", "utf8")],
+    ["CONTRIBUTING.md", readFileSync("CONTRIBUTING.md", "utf8")],
+    ["SECURITY.md", readFileSync("SECURITY.md", "utf8")],
+    ["package.json", readFileSync("package.json", "utf8")],
+    [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      readFileSync(".github/ISSUE_TEMPLATE/config.yml", "utf8"),
+    ],
+  ];
+
+  it("package.json 에서 소유자를 읽어낼 수 있다", () => {
+    // when & then
+    expect(REPO_OWNER).not.toBe("");
+  });
+
+  it.each(DOCS)("%s 의 저장소 링크가 같은 소유자를 가리킨다", (_name, text) => {
+    // when
+    const wrong = ownersIn(text).filter((owner) => owner !== REPO_OWNER);
+
+    // then
+    expect(wrong).toEqual([]);
+  });
+
+  it("CODEOWNERS 의 소유자가 저장소 소유자와 같다", () => {
+    // when
+    // 여기가 어긋나면 GitHub 이 "Unknown owner" 로 보고, 코드 소유자 승인
+    // 요건을 만족시킬 방법이 없어집니다.
+    const wrong = [...codeowners.matchAll(/^[^#\s]\S*\s+@(\S+)/gm)]
+      .map((match) => match[1] ?? "")
+      .filter((owner) => owner !== REPO_OWNER);
+
+    // then
+    expect(wrong).toEqual([]);
+  });
+
+  it("CODEOWNERS 가 최소한 기본 규칙 하나는 갖는다", () => {
+    // when
+    const rules = [...codeowners.matchAll(/^[^#\s]\S*\s+@\S+/gm)];
+
+    // then
+    expect(rules.length).toBeGreaterThan(0);
   });
 });

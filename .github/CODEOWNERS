@@ -8,18 +8,18 @@
 # 마지막에 매칭된 규칙이 이깁니다 — 더 좁은 경로를 아래에 두세요.
 
 # 기본: 저장소 전체
-*                       @leegyurak
+*                       @devgyurak
 
 # 외부 API 를 직접 건드리는 곳. 잘못 바꾸면 조용히 로그인이 막히므로
 # 소유자를 따로 명시해 두어, 경로가 세분화되더라도 리뷰가 빠지지 않게 합니다.
-/src/constants.ts       @leegyurak
-/src/crypto.ts          @leegyurak
-/src/auth/              @leegyurak
-/src/transport.ts       @leegyurak
+/src/constants.ts       @devgyurak
+/src/crypto.ts          @devgyurak
+/src/auth/              @devgyurak
+/src/transport.ts       @devgyurak
 
 # 배포·보안 설정
-/.github/               @leegyurak
-/package.json           @leegyurak
-/tsup.config.ts         @leegyurak
-/LICENSE                @leegyurak
-/SECURITY.md            @leegyurak
+/.github/               @devgyurak
+/package.json           @devgyurak
+/tsup.config.ts         @devgyurak
+/LICENSE                @devgyurak
+/SECURITY.md            @devgyurak

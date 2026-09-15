@@ -183,7 +183,7 @@ upt/node-tls-client
 > (`ADD:` + `feature` + `external-api`)은 ✨ 가 아니라 🚄 에 실립니다.
 >
 > 카테고리를 새로 넣거나 순서를 바꿀 때 이 점을 잊지 마세요. 확인은
-> `gh api repos/leegyurak/korail.js/releases/generate-notes -f tag_name=probe
+> `gh api repos/devgyurak/korail.js/releases/generate-notes -f tag_name=probe
 > -f previous_tag_name=<직전태그>` 로 — 릴리스를 만들지 않고 분류 결과만
 > 돌려줍니다. **이 저장소에서는 아직 확인하지 않았으니 첫 릴리스 때 한 번
 > 찍어 보세요.**
