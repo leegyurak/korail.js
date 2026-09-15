@@ -7,9 +7,9 @@
 코레일 스마트 예매(코레일톡) API 를 감싼 비공식 클라이언트
 
 [![CI](https://github.com/leegyurak/korail.js/actions/workflows/ci.yml/badge.svg)](https://github.com/leegyurak/korail.js/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/korail.js?color=CB3837&logo=npm&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/korail.js)
-[![Node](https://img.shields.io/node/v/korail.js?color=5FA04E&logo=node.js&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/korail.js)
-[![License](https://img.shields.io/npm/l/korail.js?color=green&cacheSeconds=10800)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@devgyurak/korail.js?color=CB3837&logo=npm&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/@devgyurak/korail.js)
+[![Node](https://img.shields.io/node/v/@devgyurak/korail.js?color=5FA04E&logo=node.js&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/@devgyurak/korail.js)
+[![License](https://img.shields.io/npm/l/@devgyurak/korail.js?color=green&cacheSeconds=10800)](LICENSE)
 
 [빠른 시작](#빠른-시작) · [할 수 있는 것](#할-수-있는-것) · [API 레퍼런스](docs/reference.md) · [기여하기](CONTRIBUTING.md)
 
@@ -20,13 +20,13 @@
 ## 빠른 시작
 
 ```bash
-npm install korail.js      # pnpm add korail.js / yarn add korail.js
+npm install @devgyurak/korail.js      # pnpm add @devgyurak/korail.js / yarn add @devgyurak/korail.js
 ```
 
 **TypeScript · ESM**
 
 ```ts
-import { Korail } from "korail.js";
+import { Korail } from "@devgyurak/korail.js";
 
 const korail = await Korail.loggedIn("me@example.com", "password");
 try {
@@ -42,7 +42,7 @@ try {
 **JavaScript · CommonJS**
 
 ```js
-const { Korail } = require("korail.js");
+const { Korail } = require("@devgyurak/korail.js");
 
 (async () => {
   const korail = await Korail.loggedIn("me@example.com", "password");
@@ -82,7 +82,7 @@ const { Korail } = require("korail.js");
 ### 표 예매하고 결제하기
 
 ```ts
-import { AdultPassenger, Card, ChildPassenger } from "korail.js";
+import { AdultPassenger, Card, ChildPassenger } from "@devgyurak/korail.js";
 
 const trains = await korail.trains.search("서울", "부산", {
   departAfter: new Date("2026-04-01T09:00:00+09:00"),
@@ -103,7 +103,7 @@ await korail.reservations.pay(
 <summary><b>취소표 기다리기</b></summary>
 
 ```ts
-import { NoResultsError, PastDepartureError } from "korail.js";
+import { NoResultsError, PastDepartureError } from "@devgyurak/korail.js";
 
 const departAfter = new Date("2026-04-01T09:00:00+09:00");
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -183,7 +183,7 @@ for (const ticket of await korail.tickets.all()) {
 저장해 두고 계속 쓰세요.
 
 ```ts
-import { Korail, profileById, randomProfile } from "korail.js";
+import { Korail, profileById, randomProfile } from "@devgyurak/korail.js";
 
 const profile = profileById(savedId) ?? randomProfile();
 const korail = new Korail({ deviceProfile: profile });
@@ -205,7 +205,7 @@ const korail = new Korail({ deviceProfile: profile });
 | **응답 모델은 불변**   | `Object.freeze` 돼 있습니다. 고치려 들면 strict 모드에서 예외가 납니다.         |
 
 ```ts
-import { KorailApiError, SoldOutError } from "korail.js";
+import { KorailApiError, SoldOutError } from "@devgyurak/korail.js";
 
 try {
   await korail.reservations.create(train);

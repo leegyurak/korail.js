@@ -13,16 +13,28 @@ import * as korailModule from "../src/index";
 const README = readFileSync("README.md", "utf8");
 const REFERENCE = readFileSync("docs/reference.md", "utf8");
 
+/**
+ * 문서가 써야 하는 설치·import 지정자.
+ *
+ * 문자열로 박아 두면 패키지 이름이 바뀔 때 테스트만 조용히 통과하고 문서는 옛
+ * 이름을 가리킵니다 — 사용자는 `npm install` 에서 404 를 봅니다. `package.json`
+ * 에서 읽어 와 한 곳만 바꾸면 따라오게 합니다.
+ */
+const PACKAGE_NAME = (JSON.parse(readFileSync("package.json", "utf8")) as { name: string }).name;
+
+/** 정규식에 넣기 위한 이스케이프 — 스코프 이름의 `@`·`/`·`.` 가 메타문자입니다. */
+const NAME_PATTERN = PACKAGE_NAME.replaceAll(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+
 /** ```ts / ```js 코드 블록 본문들. */
 function codeBlocks(markdown: string): string[] {
   return [...markdown.matchAll(/```(?:ts|js)\n([\s\S]*?)```/g)].map((match) => match[1] ?? "");
 }
 
-/** `import { A, B } from "korail.js"` · `require("korail.js")` 에서 가져오는 이름들. */
+/** 문서의 코드 블록이 이 패키지에서 가져오는 이름들. */
 function importedNames(markdown: string): string[] {
   const patterns = [
-    /import\s*\{([^}]+)\}\s*from\s*"korail\.js"/g,
-    /const\s*\{([^}]+)\}\s*=\s*require\("korail\.js"\)/g,
+    new RegExp(`import\\s*\\{([^}]+)\\}\\s*from\\s*"${NAME_PATTERN}"`, "g"),
+    new RegExp(`const\\s*\\{([^}]+)\\}\\s*=\\s*require\\("${NAME_PATTERN}"\\)`, "g"),
   ];
   return patterns
     .flatMap((pattern) => [...markdown.matchAll(pattern)])
@@ -74,6 +86,26 @@ describe("README", () => {
 
     // then
     expect(floating).toEqual([]);
+  });
+
+  it("설치 명령이 실제 패키지 이름을 쓴다", () => {
+    // when & then
+    // npm 은 `korail.js` 를 `korailjs` 와 너무 비슷하다며 거부합니다 — 스코프를
+    // 붙여야만 배포됩니다. 문서가 옛 이름을 가리키면 사용자는 404 를 봅니다.
+    expect(README).toContain(`npm install ${PACKAGE_NAME}`);
+  });
+
+  it("문서에 배포할 수 없는 옛 지정자가 남아 있지 않다", () => {
+    // when
+    const stale = [README, REFERENCE].flatMap((doc) =>
+      [...doc.matchAll(/(?:from|require\()\s*"([^"]+)"/g)]
+        .map((match) => match[1])
+        .filter((specifier) => specifier !== undefined && /korail/i.test(specifier))
+        .filter((specifier) => specifier !== PACKAGE_NAME),
+    );
+
+    // then
+    expect(stale).toEqual([]);
   });
 
   it("레퍼런스로 가는 링크가 있다", () => {

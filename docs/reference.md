@@ -70,7 +70,7 @@ interface KorailOptions {
 돌아다니지 않습니다.
 
 ```ts
-import { Korail } from "korail.js";
+import { Korail } from "@devgyurak/korail.js";
 
 const korail = await Korail.loggedIn("me@example.com", "password");
 try {
@@ -81,7 +81,7 @@ try {
 ```
 
 ```js
-const { Korail } = require("korail.js");
+const { Korail } = require("@devgyurak/korail.js");
 
 (async () => {
   const korail = new Korail();
@@ -170,7 +170,7 @@ interface TrainSearchOptions {
 `new Date("2026-04-01T09:00:00+09:00")`.
 
 ```ts
-import { AdultPassenger, ChildPassenger, TrainType } from "korail.js";
+import { AdultPassenger, ChildPassenger, TrainType } from "@devgyurak/korail.js";
 
 const trains = await korail.trains.search("서울", "부산", {
   departAfter: new Date("2026-04-01T09:00:00+09:00"),
@@ -189,7 +189,7 @@ await korail.trains.search("서울", "부산", { includeWaitingList: true });
 ```
 
 ```js
-const { Korail, AdultPassenger } = require("korail.js");
+const { Korail, AdultPassenger } = require("@devgyurak/korail.js");
 
 (async () => {
   const korail = await Korail.loggedIn("me@example.com", "password");
@@ -246,7 +246,7 @@ class ReservationResource {
 `pay()` · `cancel()` 은 성공 시 아무것도 반환하지 않고, 실패하면 던집니다.
 
 ```ts
-import { Card, ReserveOption } from "korail.js";
+import { Card, ReserveOption } from "@devgyurak/korail.js";
 
 const reservation = await korail.reservations.create(trains[0], undefined, ReserveOption.SPECIAL_FIRST);
 console.log(String(reservation));
@@ -507,7 +507,7 @@ class Passenger {
 블록을 인덱스로 받기 때문에, 같은 조건을 두 블록으로 쪼개 보낼 이유가 없습니다.
 
 ```ts
-import { AdultPassenger, ChildPassenger, Passenger } from "korail.js";
+import { AdultPassenger, ChildPassenger, Passenger } from "@devgyurak/korail.js";
 
 const merged = Passenger.reduce([new AdultPassenger(2), new ChildPassenger(1), new AdultPassenger(1)]);
 console.log(merged.map(String));
@@ -574,7 +574,7 @@ KorailError                  라이브러리 유래 실패 전부
 필요하면 `KorailApiError` 의 `code` 를 보세요.
 
 ```ts
-import { KorailApiError, NoResultsError, SoldOutError } from "korail.js";
+import { KorailApiError, NoResultsError, SoldOutError } from "@devgyurak/korail.js";
 
 try {
   await korail.reservations.create(train);
@@ -619,7 +619,7 @@ const DEVICE_PROFILES: readonly DeviceProfile[]; // 100개
 부자연스럽습니다.
 
 ```ts
-import { Korail, profileById, randomProfile } from "korail.js";
+import { Korail, profileById, randomProfile } from "@devgyurak/korail.js";
 
 const profile = profileById(savedId) ?? randomProfile(); // id 를 저장해 두고 복원
 const korail = new Korail({ deviceProfile: profile });
@@ -653,7 +653,7 @@ class NetFunnelHelper {
 대기열이 붙는 상황을 만나면 직접 꺼내 쓸 수 있도록 공개 유틸리티로 남겨 둡니다.
 
 ```ts
-import { NetFunnelHelper } from "korail.js";
+import { NetFunnelHelper } from "@devgyurak/korail.js";
 
 const helper = new NetFunnelHelper();
 const key = await helper.run(); // 통과할 때까지 폴링합니다
