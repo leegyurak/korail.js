@@ -6,7 +6,7 @@
 
 코레일 스마트 예매(코레일톡) API 를 감싼 비공식 클라이언트
 
-[![CI](https://github.com/leegyurak/korail.js/actions/workflows/ci.yml/badge.svg)](https://github.com/leegyurak/korail.js/actions/workflows/ci.yml)
+[![CI](https://github.com/devgyurak/korail.js/actions/workflows/ci.yml/badge.svg)](https://github.com/devgyurak/korail.js/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@devgyurak/korail.js?color=CB3837&logo=npm&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/@devgyurak/korail.js)
 [![Node](https://img.shields.io/node/v/@devgyurak/korail.js?color=5FA04E&logo=node.js&logoColor=white&cacheSeconds=10800)](https://www.npmjs.com/package/@devgyurak/korail.js)
 [![License](https://img.shields.io/npm/l/@devgyurak/korail.js?color=green&cacheSeconds=10800)](LICENSE)
@@ -233,7 +233,7 @@ try {
 | 🤝 [기여 가이드](CONTRIBUTING.md)                          | 개발 환경, 테스트 규칙, PR 절차                         |
 | 🏛 [아키텍처 규약](AGENTS.md)                               | 계층 구조, 외부 API 불변식                             |
 | 🤖 [에이전트 설정](.agents/README.md)                       | Codex · Claude Code · Pi · Cursor · OpenCode |
-| 🐍 [pykorail](https://github.com/leegyurak/pykorail)  | 파이썬용 자매 프로젝트                                  |
+| 🐍 [pykorail](https://github.com/devgyurak/pykorail)  | 파이썬용 자매 프로젝트                                  |
 | 🔐 [보안 정책](SECURITY.md) · [행동 강령](CODE_OF_CONDUCT.md) |                                              |
 
 ---
@@ -243,7 +243,7 @@ try {
 <details>
 <summary><b>pykorail 과 무슨 관계인가요?</b></summary>
 
-korail.js 는 [pykorail](https://github.com/leegyurak/pykorail) 과 같은 코레일
+korail.js 는 [pykorail](https://github.com/devgyurak/pykorail) 과 같은 코레일
 스마트 앱 API 를 감싸는 자매 프로젝트입니다. 파이썬을 쓰신다면 그쪽을 보세요.
 
 **두 패키지는 각자 유지보수됩니다.** 코레일이 앱을 바꾸면 양쪽에 각각 반영되며,
@@ -291,7 +291,7 @@ Deno Deploy 같은 엣지 런타임에서도 동작하지 않습니다.
 <summary><b>어제까지 되던 게 오늘 안 됩니다</b></summary>
 
 코레일이 서버를 바꿨을 수 있습니다.
-[API 변경 이슈](https://github.com/leegyurak/korail.js/issues/new?template=external_api_change.yml)
+[API 변경 이슈](https://github.com/devgyurak/korail.js/issues/new?template=external_api_change.yml)
 로 알려주시면 대응하겠습니다. **가장 도움이 되는 기여입니다.**
 
 </details>

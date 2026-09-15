@@ -11,14 +11,14 @@
     "booking",
     "reservation"
   ],
-  "homepage": "https://github.com/leegyurak/korail.js#readme",
-  "bugs": "https://github.com/leegyurak/korail.js/issues",
+  "homepage": "https://github.com/devgyurak/korail.js#readme",
+  "bugs": "https://github.com/devgyurak/korail.js/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leegyurak/korail.js.git"
+    "url": "git+https://github.com/devgyurak/korail.js.git"
   },
   "license": "MIT",
-  "author": "leegyurak",
+  "author": "devgyurak",
   "type": "module",
   "exports": {
     ".": {
