@@ -48,6 +48,25 @@ describe("버전", () => {
     expect(releaseWorkflow).toContain("id-token: write");
   });
 
+  it("릴리스가 저장된 npm 토큰을 쓰지 않는다", () => {
+    // when
+    // Trusted Publishing(OIDC)으로 배포하므로 장기 크리덴셜이 필요 없습니다.
+    // 토큰이 다시 들어오면 그 순간 저장소가 "털리면 배포까지 뚫리는" 상태로
+    // 돌아가는데, 배포는 잘 되기 때문에 아무도 알아채지 못합니다.
+    const leaks = ["NODE_AUTH_TOKEN", "NPM_TOKEN", "secrets.NPM"].filter((needle) =>
+      releaseWorkflow.includes(needle),
+    );
+
+    // then
+    expect(leaks).toEqual([]);
+  });
+
+  it("Trusted Publishing 에 필요한 OIDC 권한을 선언한다", () => {
+    // when & then
+    // 토큰이 없으므로 이 권한이 빠지면 인증 수단이 아예 사라집니다.
+    expect(releaseWorkflow).toContain("id-token: write");
+  });
+
   it("게이트가 버전 주입보다 먼저 돈다", () => {
     // when
     const gates = releaseWorkflow.indexOf("name: 전 게이트 재실행");
