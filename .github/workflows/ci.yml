@@ -83,7 +83,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        # 태그에 `v` 접두사가 있습니다 — `@0.28.0` 은 존재하지 않는 참조라
+        # 워크플로가 "Unable to resolve action" 으로 시작조차 못 합니다.
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scanners: vuln,secret
