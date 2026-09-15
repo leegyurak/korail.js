@@ -1,5 +1,5 @@
 {
-  "name": "korail.js",
+  "name": "@devgyurak/korail.js",
   "version": "0.0.0",
   "description": "코레일(KTX) 스마트 예매 비공식 TypeScript/JavaScript 클라이언트",
   "keywords": [
