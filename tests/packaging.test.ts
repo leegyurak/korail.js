@@ -48,6 +48,30 @@ describe("버전", () => {
     expect(releaseWorkflow).toContain("id-token: write");
   });
 
+  it("게이트가 버전 주입보다 먼저 돈다", () => {
+    // when
+    const gates = releaseWorkflow.indexOf("name: 전 게이트 재실행");
+    const inject = releaseWorkflow.indexOf("name: 태그에서 버전 주입");
+
+    // then
+    // 주입을 먼저 하면 위의 "version 은 플레이스홀더다" 테스트가 주입된 버전을
+    // 보고 실패해, 릴리스가 배포 직전에 멈춥니다. 실제로 v0.1.0 에서 그렇게
+    // 멈췄습니다 — 순서가 곧 계약입니다.
+    expect(gates).toBeGreaterThan(-1);
+    expect(inject).toBeGreaterThan(gates);
+  });
+
+  it("빌드와 배포는 버전 주입 뒤에 온다", () => {
+    // when
+    const inject = releaseWorkflow.indexOf("name: 태그에서 버전 주입");
+    const build = releaseWorkflow.indexOf("run: pnpm build");
+    const publish = releaseWorkflow.indexOf("npm publish");
+
+    // then
+    expect(build).toBeGreaterThan(inject);
+    expect(publish).toBeGreaterThan(inject);
+  });
+
   it("릴리스가 배포 전에 전 게이트를 다시 돌린다", () => {
     // when
     const gates = ["biome ci", "pnpm typecheck", "pnpm test"].filter(
