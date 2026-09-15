@@ -166,6 +166,20 @@ describe("지원 Node 버전", () => {
     expect(versions).toEqual(["20", "22", "24"]);
   });
 
+  it("릴리스 잡이 Trusted Publishing 최소 Node 버전을 만족한다", () => {
+    // given
+    const declared = /node-version:\s*"([^"]+)"/.exec(releaseWorkflow)?.[1] ?? "";
+
+    // when
+    const [major = 0, minor = 0] = declared.split(".").map(Number);
+
+    // then
+    // npm Trusted Publishing(OIDC)은 npm >= 11.5.1 · Node >= 22.14 를 요구합니다.
+    // Node 20.19 에 동봉된 npm 은 10.8.2 라, 낮추면 토큰 없는 배포로 전환할 수
+    // 없게 됩니다 — 그때 가서야 드러나므로 여기서 막습니다.
+    expect(major * 1000 + minor).toBeGreaterThanOrEqual(22 * 1000 + 14);
+  });
+
   it("CI 가 ESM·CJS 를 둘 다 불러 본다", () => {
     // when & then
     expect(ciWorkflow).toContain("dist/index.mjs");

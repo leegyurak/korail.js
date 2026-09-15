@@ -30,7 +30,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20.19.0"
+          # 릴리스 잡만 최신 Node 를 씁니다 — npm Trusted Publishing(OIDC)이
+          # npm >= 11.5.1 · Node >= 22.14 를 요구하는데, Node 20.19 에 동봉된
+          # npm 은 10.8.2 라 전환이 막힙니다. 배포 산출물은 tsup 이
+          # `target: node20` 으로 내보내므로 이 값에 영향받지 않고, Node 20
+          # 동작은 CI 매트릭스가 계속 검증합니다.
+          node-version: "24"
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
